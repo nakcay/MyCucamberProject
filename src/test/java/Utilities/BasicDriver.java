@@ -2,30 +2,48 @@ package Utilities;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.safari.SafariDriver;
 
 public class BasicDriver {
 
-    public static WebDriver driver;
+    private static ThreadLocal<WebDriver> threadDriver = new ThreadLocal<>();
+    private static ThreadLocal<String> threadDriverName = new ThreadLocal<>();
 
     public static WebDriver getDriver() {
-        if (driver == null) {
-            ChromeOptions options = new ChromeOptions();
-            options.addArguments("--remote-allow-origins=*");//to solve the errorWith chrome
-            System.setProperty(ChromeDriverService.CHROME_DRIVER_SILENT_OUTPUT_PROPERTY, "true");
-            driver = new ChromeDriver(options);
+        if (threadDriver.get()==null) {
+            switch (threadDriverName.get()) {
+                case "firefox":
+                    threadDriver.set(new FirefoxDriver());
+                    break;
+                case "safari":
+                    threadDriver.set(new SafariDriver());
+                    break;
+                case "edge":
+                    threadDriver.set(new EdgeDriver());
+                    break;
+                default:
+                    ChromeOptions options = new ChromeOptions();
+                    options.addArguments("--remote-allow-origins=*"); // To solve the error with Chrome v111
+                    threadDriver.set(new ChromeDriver(options));
+            }
         }
-        return driver;
+        return threadDriver.get();
     }
 
-    public static void quitDriver() {
+    public static void quitDriver(){
         try {
             Thread.sleep(3000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        driver.quit();
-        driver = null;
+        if (threadDriver.get()!=null) {
+            threadDriver.get().quit();
+        }
     }
+
 }
+
+
