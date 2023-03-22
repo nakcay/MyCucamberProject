@@ -16,7 +16,7 @@ public class _08_RunnerForExtendReportWithScreenShots extends AbstractTestNGCucu
 
 
     @AfterClass
-    public static void writeExtendReport() {
+    public static void writeExtentReport() {
         ExtentService.getInstance().setSystemInfo("Windows User Name", System.getProperty("User.name"));
         ExtentService.getInstance().setSystemInfo("Time zone", System.getProperty("User.timezone"));
         ExtentService.getInstance().setSystemInfo("User Name", System.getProperty("John Snow"));
